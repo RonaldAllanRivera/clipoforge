@@ -1,15 +1,29 @@
-function App() {
-  const siteName = import.meta.env.VITE_SITE_NAME;
-  const environment = import.meta.env.VITE_ENVIRONMENT;
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import AuthPage from "./pages/AuthPage";
+import DashboardPage from "./pages/DashboardPage";
+import { useAuth } from "./context/AuthContext";
 
-  // Example usage:
-  document.title = siteName + " Dashboard";
+function App() {
+  const { isLoggedIn } = useAuth();
 
   return (
-    <div>
-      <h1>{siteName}</h1>
-      <span>{environment === "production" ? "🌎 Live" : "🧪 Dev"}</span>
-    </div>
+    <Router>
+      <Routes>
+        <Route
+          path="/dashboard"
+          element={
+            isLoggedIn ? <DashboardPage /> : <Navigate to="/auth" replace />
+          }
+        />
+        <Route
+          path="/auth"
+          element={
+            !isLoggedIn ? <AuthPage /> : <Navigate to="/dashboard" replace />
+          }
+        />
+        <Route path="*" element={<Navigate to={isLoggedIn ? "/dashboard" : "/auth"} replace />} />
+      </Routes>
+    </Router>
   );
 }
 

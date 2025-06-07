@@ -54,7 +54,7 @@ Clipoforge AI integrates modern web technologies, cloud deployment, and advanced
 | Frontend   | React.js + Tailwind CSS     |
 | Backend    | Python Django + DRF         |
 | AI/ML      | Whisper.cpp, GPT-3.5 Turbo, FFmpeg, MoviePy |
-| Auth       | Django AllAuth + Google OAuth |
+| Auth       | Djoser + Simple JWT (email-only, API-first) |
 | Database   | PostgreSQL (Supabase-ready) |
 | Storage    | Backblaze B2 / Wasabi / S3  |
 | Payments   | Stripe API + Webhooks       |
