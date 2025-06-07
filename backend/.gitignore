@@ -1,0 +1,31 @@
+# Python
+backend/venv/
+__pycache__/
+*.pyc
+
+# Node.js
+frontend/node_modules/
+frontend/.next/
+frontend/dist/
+
+# Env files
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker/*.env
+*.log
+
+# Coverage
+coverage/
+htmlcov/
+
+# Pytest
+.pytest_cache/
