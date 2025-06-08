@@ -34,6 +34,21 @@ CORS_ALLOW_ALL_ORIGINS = env.bool('CORS_ALLOW_ALL_ORIGINS', default=True)
 SITE_ID = 1
 
 # --- AllAuth/dj-rest-auth settings ---
+
+# Email backend: use real SMTP for production, console for development
+if ENVIRONMENT == "production":
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = env("EMAIL_HOST")
+    EMAIL_PORT = env.int("EMAIL_PORT", default=587)
+    EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
+    EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+    EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+    DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="noreply@yourdomain.com")
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+    DEFAULT_FROM_EMAIL = "localtest@localhost"
+
+
 AUTH_USER_MODEL = 'users.CustomUser'
 
 
@@ -55,36 +70,22 @@ DJOSER = {
     "LOGIN_FIELD": "email",
     "USER_CREATE_PASSWORD_RETYPE": True,  # Require password twice on signup
     "USERNAME_FIELD": None,               # Use email-only auth
-    "SEND_CONFIRMATION_EMAIL": False,     # Set True and add config for prod
+    "SEND_CONFIRMATION_EMAIL": ENVIRONMENT == "production",  # Only True in production!
+    "ACTIVATION_URL": "activate/{uid}/{token}/",
+    # Optionally add password reset/other email flows here
+    "SERIALIZERS": {
+        "user": "users.serializers.UserSerializer",
+        "current_user": "users.serializers.UserSerializer",
+    },
 }
 
 
-
-REST_USE_JWT = False  # Default is token-based; you can switch to JWT if you want
-REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
-    ],
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated",
-    ],
-}
-
-
-if ENVIRONMENT == "production":
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    # EMAIL_HOST = 'smtp.sendgrid.net'
-    # EMAIL_HOST_USER = 'apikey'
-    # EMAIL_HOST_PASSWORD = env('SENDGRID_API_KEY')
-    # EMAIL_PORT = 587
-    # EMAIL_USE_TLS = True
-else:
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # --- Standard Django settings below ---
 
-SECRET_KEY = 'django-insecure-al6nwl(3^k)x$iouoqj_nx8r1#7z8$q+u*19ui6lc*otbm)@qn'
+SECRET_KEY = env("SECRET_KEY", default="unsafe-secret-for-dev-only")
+
+
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [

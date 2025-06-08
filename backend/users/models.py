@@ -1,3 +1,4 @@
+# users/models.py
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 
@@ -22,9 +23,11 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
         return self._create_user(email, password, **extra_fields)
 
+
 class CustomUser(AbstractUser):
     username = None
     email = models.EmailField('email address', unique=True)
+    credits = models.PositiveIntegerField(default=10)  # 10 free credits by default
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
     objects = CustomUserManager()

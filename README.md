@@ -28,7 +28,7 @@ Clipoforge AI integrates modern web technologies, cloud deployment, and advanced
 - Admin email alerts for suspicious activity and failed payment events.
 
 ✅ **User Management & Authentication**  
-- Email-only login (username removed) via Django AllAuth.  
+- Email-only login (username removed) via Djoser + Simple JWT (email-only, API-first).  
 - Google OAuth quick login support.  
 - Secure, GDPR-ready user and content management.
 

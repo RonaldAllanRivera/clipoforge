@@ -1,5 +1,15 @@
 # Clipoforge AI - Changelog
 
+## [2025-06-08] User Info + Credits System on Dashboard
+
+- Added 'credits' field to backend user model for SaaS usage tracking
+- Exposed credits in Djoser user serializer and /auth/users/me/ endpoint
+- Frontend dashboard now displays real user email and credits after login
+- Modularized dashboard into UserInfo, CreditsDisplay, CheckoutButton, and LogoutButton components
+- Fixed all legacy dj-rest-auth import errors after Djoser migration
+- JWT context + instant logout for refresh-free SPA UX
+
+
 ## [2025-06-07] Djoser + Simple JWT & SaaS React Auth Migration
 
 - Fully removed all django-allauth and dj-rest-auth packages and config
