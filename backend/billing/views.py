@@ -1,5 +1,6 @@
+# backend/billing/views.py
 from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -8,6 +9,11 @@ from django.views import View
 from .models import Customer, Transaction, CreditBalance
 import stripe
 import json
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+
 
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -102,3 +108,55 @@ def get_user_credits(request):
         credits = 0
     return JsonResponse({'credits': credits})
 
+class CreateStripeCheckoutSession(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        # Price and credits can be dynamic
+        credits_to_buy = int(request.data.get("credits", 10))
+        price_cents = 500 * credits_to_buy // 10  # Example: 10 credits = $5.00
+
+        session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[
+                {
+                    "price_data": {
+                        "currency": "usd",
+                        "unit_amount": price_cents,
+                        "product_data": {
+                            "name": f"{credits_to_buy} Credits (Clipoforge AI)"
+                        },
+                    },
+                    "quantity": 1,
+                }
+            ],
+            mode="payment",
+            customer_email=request.user.email,
+            success_url=settings.FRONTEND_SUCCESS_URL,
+            cancel_url=settings.FRONTEND_CANCEL_URL,
+            metadata={"user_id": str(request.user.id), "credits": credits_to_buy},
+        )
+        return Response({"checkout_url": session.url})
+
+
+@csrf_exempt
+def stripe_webhook(request):
+    payload = request.body
+    sig_header = request.META["HTTP_STRIPE_SIGNATURE"]
+    event = None
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+        )
+    except (ValueError, stripe.error.SignatureVerificationError):
+        return HttpResponse(status=400)
+
+    if event["type"] == "checkout.session.completed":
+        session = event["data"]["object"]
+        user_id = session["metadata"]["user_id"]
+        credits = int(session["metadata"]["credits"])
+        from users.models import CustomUser
+        user = CustomUser.objects.get(id=user_id)
+        user.credits += credits
+        user.save()
+    return HttpResponse(status=200)

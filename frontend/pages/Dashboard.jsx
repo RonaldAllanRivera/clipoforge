@@ -9,7 +9,7 @@ export default function Dashboard() {
     <div className="max-w-md mx-auto mt-12 p-8 bg-white rounded shadow flex flex-col items-center">
       <UserInfo />
       <CreditsDisplay />
-      <CheckoutButton />
+      <CheckoutButton creditsToBuy={10} />
       <LogoutButton />
     </div>
   );

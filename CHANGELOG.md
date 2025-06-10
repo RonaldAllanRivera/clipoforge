@@ -1,5 +1,17 @@
 # Clipoforge AI - Changelog
 
+
+## [2025-06-08] Stripe Credits Purchase & Dashboard Update
+
+- Implemented DRF API endpoint for Stripe Checkout sessions with dynamic credit packs
+- Added Stripe webhook handler to auto-increment user credits after successful payment
+- Modularized frontend dashboard: UserInfo, CreditsDisplay, CheckoutButton, LogoutButton
+- Checkout button launches Stripe Checkout and redirects to dashboard on success
+- Dashboard credits auto-refresh after payment
+- Cleaned up legacy/classic payment endpoints for SaaS-standard Stripe workflow
+- Secured purchase endpoints with JWT; all Stripe/API secrets moved to .env
+- Updated .env-sample to document required Stripe and frontend URL keys
+
 ## [2025-06-08] User Info + Credits System on Dashboard
 
 - Added 'credits' field to backend user model for SaaS usage tracking
@@ -8,7 +20,6 @@
 - Modularized dashboard into UserInfo, CreditsDisplay, CheckoutButton, and LogoutButton components
 - Fixed all legacy dj-rest-auth import errors after Djoser migration
 - JWT context + instant logout for refresh-free SPA UX
-
 
 ## [2025-06-07] Djoser + Simple JWT & SaaS React Auth Migration
 
